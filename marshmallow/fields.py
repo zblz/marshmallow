@@ -569,6 +569,9 @@ class List(Field):
                     'marshmallow.base.FieldABC',
                 )
             self.container = cls_or_instance
+        if isinstance(self.container, Nested):
+            self.only = self.container.only
+            self.exclude = self.container.exclude
 
     def get_value(self, obj, attr, accessor=None):
         """Return the value for a given key from an object."""
@@ -587,6 +590,9 @@ class List(Field):
         self.container = copy.deepcopy(self.container)
         self.container.parent = self
         self.container.name = field_name
+        if isinstance(self.container, Nested):
+            self.container.only = self.only
+            self.container.exclude = self.exclude
 
     def _serialize(self, value, attr, obj, **kwargs):
         if value is None:
@@ -1208,6 +1214,9 @@ class Dict(Field):
                     'marshmallow.base.FieldABC',
                 )
             self.value_container = values
+            if isinstance(self.value_container, Nested):
+                self.only = self.value_container.only
+                self.exclude = self.value_container.exclude
         if keys is None:
             self.key_container = None
         elif isinstance(keys, type):
@@ -1231,6 +1240,9 @@ class Dict(Field):
             self.value_container = copy.deepcopy(self.value_container)
             self.value_container.parent = self
             self.value_container.name = field_name
+        if isinstance(self.value_container, Nested):
+            self.value_container.only = self.only
+            self.value_container.exclude = self.exclude
         if self.key_container:
             self.key_container = copy.deepcopy(self.key_container)
             self.key_container.parent = self
